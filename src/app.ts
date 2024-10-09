@@ -1,9 +1,15 @@
 /// <reference lib="dom" />
 
+interface Quote {
+	quote: string;
+	book: string;
+	chapter: string;
+	link: string;
+}
+
 import { generateLatexElement } from "./latexUtils.ts";
 
 const endpoint = globalThis.env.SHEET_ENDPOINT;
-console.log(endpoint);
 
 async function fetchData() {
 	try {
@@ -51,34 +57,45 @@ function updateGradient(chapter: string): void {
 	}
 }
 
-async function updatePageContent(data: any[], idx: number): Promise<void> {
+async function updatePageContent(data: Quote[], idx: number): Promise<void> {
 	try {
-		const hostElement = document.getElementById("latex-content")
-			?.shadowRoot as ShadowRoot;
-		if (hostElement && hostElement.hasChildNodes()) {
-			hostElement.removeChild(hostElement.lastChild!);
+		const hostElement = document.getElementById("latex-content");
+		if (!hostElement) {
+			throw new Error("Host element not found");
 		}
-		//hostElement.appendChild(await generateLatexElement(data[idx].quote));
-		generateLatexElement(data[idx].quote);
+
+		const shadowRoot = hostElement.shadowRoot;
+		if (!shadowRoot) {
+			throw new Error("Shadow root not found");
+		}
+
+		// Generate and append new quote
+		const latexElement = await generateLatexElement(data[idx].quote);
+		shadowRoot.innerHTML = "";
+		shadowRoot.appendChild(latexElement);
+
+		// Update other elements
+		const chapterField = document.getElementById(
+			"chapter-field",
+		) as HTMLElement;
+		const chapterLink = document.getElementById(
+			"chapter-link",
+		) as HTMLAnchorElement;
+
+		if (chapterField) {
+			chapterField.textContent = `${data[idx].book}, `;
+		}
+
+		if (chapterLink) {
+			chapterLink.textContent = data[idx].chapter;
+			chapterLink.href = data[idx].link;
+		}
+
+		updateGradient(data[idx].book);
 	} catch (error) {
-		console.error("Error generating LaTeX: ", error);
+		console.error("Error updating page content: ", error);
 	}
-
-	chapterField!.firstChild!.nodeValue = `${data[idx].book}, `;
-	chapterLink!.textContent = data[idx].chapter;
-	chapterLink!.href = data[idx].link;
-	updateGradient(data[idx].book);
 }
-
-const buttonsContainer = document.querySelector(
-	".buttons-container",
-) as HTMLElement;
-const chapterField = document.getElementById(
-	"chapterField",
-) as HTMLElement;
-const chapterLink = document.getElementById(
-	"chapterLink",
-) as HTMLAnchorElement;
 
 globalThis.addEventListener("load", async function () {
 	const idxOtd = 37;
@@ -91,6 +108,9 @@ globalThis.addEventListener("load", async function () {
 		const numQuotes = data.length;
 		await updatePageContent(data, currIdx);
 
+		const buttonsContainer = document.querySelector(
+			".buttons-container",
+		) as HTMLElement;
 		buttonsContainer.addEventListener("click", async (event: Event) => {
 			const target = event.target as HTMLElement;
 			if (target.tagName === "BUTTON") {

@@ -23,6 +23,7 @@
   "remote": {
     "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
     "https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js": "863e38ee9c68ab4ec9f35cfdd66bcd54a0c3a3631365fdfbd06a333151887c80",
+    "https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js": "0c8d688de99ebde7fc88bf28e02b3d084783fbd147a3e049baa6d1cfae03d148",
     "https://deno.land/std@0.140.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
     "https://deno.land/std@0.140.0/_util/os.ts": "3b4c6e27febd119d36a416d7a97bd3b0251b77c88942c8f16ee5953ea13e2e49",
     "https://deno.land/std@0.140.0/bytes/bytes_list.ts": "67eb118e0b7891d2f389dad4add35856f4ad5faab46318ff99653456c23b025d",

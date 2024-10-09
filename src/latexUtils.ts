@@ -1,13 +1,10 @@
-//import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-//import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js";
-//import katexCSS from "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
-
 // deno-lint-ignore no-explicit-any
-declare const katex: any;
+declare const latexjs: any;
 
-export function generateLatexElement(string: string) {
+export async function generateLatex(string: string): Promise<string> {
 	string = string.replace(/\*(.*?)\*/g, "\\textit{$1}");
 	string = string.replace(/\\n/g, "\\par");
+
 	const latexText = `
     \\documentclass{book}
     \\begin{document}
@@ -15,13 +12,45 @@ export function generateLatexElement(string: string) {
     \\end{document}
     `;
 
-	const htmlOutput = katex.renderToString(latexText, {
-		throwOnError: false, // Prevent errors from breaking your app
-	});
+	// Import the latex.js library
+	await import("https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js");
 
-	console.log(htmlOutput);
-	return htmlOutput;
+	let generator = new latexjs.HtmlGenerator({ hyphenate: true });
+	generator = latexjs.parse(latexText, { generator: generator });
+
+	const doc =
+		generator.htmlDocument("https://cdn.jsdelivr.net/npm/latex.js/dist/")
+			.documentElement.outerHTML;
+
+	return doc;
 }
 
-export async function generateLatexImage(string: string) {
+export async function generateLatexElement(string: string): Promise<HTMLElement> {
+	let doc = await generateLatex(string);
+
+	const styleTag = `
+	<style>
+	  #latex-container {
+		--paperwidth: 700px;
+		background: ivory;
+		font-family: "Merriweather", serif;
+		font-size: 20px;
+		line-height: 1.5;
+	  }
+	  .body {
+		padding: 40px;
+	  }
+	</style>
+	`;
+
+	const headIndex = doc.indexOf("<head>") + 6;
+	doc = doc.slice(0, headIndex) + styleTag + doc.slice(headIndex);
+
+	const container = document.createElement("div");
+	container.id = "latex-container";
+	container.classList.add("page");
+	container.innerHTML = doc.trim();
+	container.style.setProperty("--paperwidth", "min(90vw, 700px)");
+
+	return container;
 }

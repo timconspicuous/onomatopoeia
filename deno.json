@@ -5,5 +5,10 @@
 	"compilerOptions": {
 		"lib": ["deno.ns"],
 		"types": ["./src/global.d.ts"]
+	},
+	"lint": {
+		"exclude": [
+			"public/bundle.js"
+		]
 	}
 }
