@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <title>Onomatopoeiae of A Song of Ice and Fire</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet" />
+</head>
+
+<body class="gradient-agot">
+    <div class="wrapper">
+        <div class="content" role="main">
+            <h1 class="title" align="center">
+                Onomatopoeiae of <br />
+                A Song of Ice and Fire
+            </h1>
+            <div class="canvas-container">
+                <div class="buttons-container">
+                    <button id="decrementButton">Previous Onomatopoeia</button>
+                    <button id="otdButton">Onomatopoeia of the day</button>
+                    <button id="incrementButton">Next Onomatopoeia</button>
+                </div>
+                <div id="latex-content" style="border: 1px solid #000000;">
+                    <!-- Shadow DOM so the styles don't spill over -->
+                    <template shadowrootmode="open"></template>
+                </div>
+                <div class="text-block" id="chapterField">
+                    <a id="chapterLink" target="_blank"></a>
+                </div>
+                <script>
+                    // This will be dynamically replaced by main.ts with the actual environment variable
+                    globalThis.env = {
+                        SHEET_ENDPOINT: "__SHEET_ENDPOINT__"
+                    };
+                </script>
+                <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+                <script type="module" src="bundle.js"></script>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="links">
+            <a href="https://bsky.app/profile/onomatopoeiae.bsky.social" target="_blank" class="footer-svg-link">
+                <img src="assets/bluesky.svg" alt="Follow me on Bluesky" class="footer-svg">
+            </a>
+        </div>
+        <a class="btn--remix" target="_top" href="https://glitch.com/edit/#!/remix/asoiafonomatopoeiae">
+            <img src="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2FLogo_Color.svg?v=1618199565140"
+                alt="" />
+            Remix on Glitch
+        </a>
+    </footer>
+</body>
+
+</html>

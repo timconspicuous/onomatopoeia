@@ -1,0 +1,9 @@
+{
+	"tasks": {
+		"build": "deno run --allow-all build.ts"
+	},
+	"compilerOptions": {
+		"lib": ["deno.ns"],
+		"types": ["./src/global.d.ts"]
+	}
+}
