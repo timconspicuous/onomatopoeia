@@ -1,12 +1,5 @@
 /// <reference lib="dom" />
 
-interface Quote {
-	quote: string;
-	book: string;
-	chapter: string;
-	link: string;
-}
-
 import { generateStyledHTML } from "../utils/textUtils.ts";
 
 const endpoint = globalThis.env.SHEET_ENDPOINT;

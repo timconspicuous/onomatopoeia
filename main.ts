@@ -1,4 +1,6 @@
-//import { generateLatexImage } from './public/latexUtils.ts';
+import { generateScreenshot } from "./utils/puppeteerUtils.ts";
+import { createBskyPost } from "./utils/blueskyUtils.ts";
+
 import { load } from "jsr:@std/dotenv";
 
 await load({ export: true });
@@ -9,11 +11,24 @@ if (!endpoint) {
 }
 
 const response = await fetch(endpoint);
-const data = await response.json();
+const { data } = await response.json();
 
-// Deno.cron("sample cron", { hour: { every: 6 } }, () => {
-// 	console.log("cron job executed");
-// });
+async function getLastIndex(): Promise<number> {
+	try {
+		const content = await Deno.readTextFile("lastIndex.txt");
+		return parseInt(content.trim(), 10);
+	} catch (error) {
+		if (error instanceof Deno.errors.NotFound) {
+			await Deno.writeTextFile("lastIndex.txt", "0");
+			return 0;
+		}
+		throw error;
+	}
+}
+
+async function updateLastIndex(index: number): Promise<void> {
+	await Deno.writeTextFile("lastIndex.txt", index.toString());
+}
 
 const handler = async (req: Request): Promise<Response> => {
 	const url = new URL(req.url);
@@ -53,3 +68,13 @@ function getContentType(filePath: string): string {
 }
 
 Deno.serve(handler);
+
+// @ts-ignore Deno.cron is unstable, run with --unstable-cron flag
+Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
+	const index = await getLastIndex();
+	const { image, aspectRatio } = await generateScreenshot(data[index].quote, "test.png");
+	await createBskyPost(data[0], image, aspectRatio);
+	await updateLastIndex(index + 1);
+
+	console.log(`Cron: posted quote of index ${index} to Bluesky.`);
+});
