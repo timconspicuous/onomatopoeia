@@ -1,11 +1,15 @@
-import * as esbuild from "https://deno.land/x/esbuild@v0.24.0/mod.js";
+import * as esbuild from "https://deno.land/x/esbuild@v0.20.0/mod.js";
+import { denoLoaderPlugin, denoResolverPlugin } from "https://deno.land/x/esbuild_deno_loader@0.9.0/mod.ts";
 
 await esbuild.build({
+	plugins: [
+		denoResolverPlugin(),  // First, resolve modules
+		denoLoaderPlugin()     // Then, load them
+	  ],
 	entryPoints: ["./src/app.ts"],
-	bundle: true,
 	outfile: "./public/bundle.js",
+	bundle: true,
 	format: "esm",
-	target: "es2020",
 });
 
 esbuild.stop();

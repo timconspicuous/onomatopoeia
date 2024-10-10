@@ -7,7 +7,7 @@ interface Quote {
 	link: string;
 }
 
-import { generateLatexElement } from "./latexUtils.ts";
+import { generateStyledHTML } from "./textUtils.ts";
 
 const endpoint = globalThis.env.SHEET_ENDPOINT;
 
@@ -57,22 +57,13 @@ function updateGradient(chapter: string): void {
 	}
 }
 
-async function updatePageContent(data: Quote[], idx: number): Promise<void> {
+function updatePageContent(data: Quote[], idx: number): void {
 	try {
 		const hostElement = document.getElementById("latex-content");
-		if (!hostElement) {
-			throw new Error("Host element not found");
-		}
-
-		const shadowRoot = hostElement.shadowRoot;
-		if (!shadowRoot) {
-			throw new Error("Shadow root not found");
-		}
 
 		// Generate and append new quote
-		const latexElement = await generateLatexElement(data[idx].quote);
-		shadowRoot.innerHTML = "";
-		shadowRoot.appendChild(latexElement);
+		const styledHTML = generateStyledHTML(data[idx].quote);
+		hostElement!.innerHTML = styledHTML;
 
 		// Update other elements
 		const chapterField = document.getElementById(
@@ -82,14 +73,9 @@ async function updatePageContent(data: Quote[], idx: number): Promise<void> {
 			"chapter-link",
 		) as HTMLAnchorElement;
 
-		if (chapterField) {
-			chapterField.textContent = `${data[idx].book}, `;
-		}
-
-		if (chapterLink) {
-			chapterLink.textContent = data[idx].chapter;
-			chapterLink.href = data[idx].link;
-		}
+		chapterField.textContent = `${data[idx].book}, `;
+		chapterLink.textContent = data[idx].chapter;
+		chapterLink.href = data[idx].link;
 
 		updateGradient(data[idx].book);
 	} catch (error) {
@@ -98,20 +84,22 @@ async function updatePageContent(data: Quote[], idx: number): Promise<void> {
 }
 
 globalThis.addEventListener("load", async function () {
-	const idxOtd = 37;
+	const hostElement = document.getElementById("latex-content");
+	hostElement!.innerHTML = generateStyledHTML("Loading...");
 
+	const idxOtd = 37;
 	const hash = globalThis.location.hash.substring(1);
 	let currIdx = parseInt(hash, 10) - 1 || idxOtd;
 
 	try {
 		const data = await fetchData();
 		const numQuotes = data.length;
-		await updatePageContent(data, currIdx);
+		updatePageContent(data, currIdx);
 
 		const buttonsContainer = document.querySelector(
 			".buttons-container",
 		) as HTMLElement;
-		buttonsContainer.addEventListener("click", async (event: Event) => {
+		buttonsContainer.addEventListener("click", (event: Event) => {
 			const target = event.target as HTMLElement;
 			if (target.tagName === "BUTTON") {
 				switch (target.id) {
@@ -127,7 +115,7 @@ globalThis.addEventListener("load", async function () {
 					default:
 						return;
 				}
-				await updatePageContent(data, currIdx);
+				updatePageContent(data, currIdx);
 				globalThis.location.hash = (currIdx + 1).toString();
 			}
 		});

@@ -29,7 +29,7 @@ export function generateStyledHTML(input: string): string {
 
             .styled-container p {
                 margin-block-start: 0;
-                margin-block-end: 1.5em; /* Adjust space between paragraphs */
+                margin-block-end: 0;
             }
 
             .styled-container .it {

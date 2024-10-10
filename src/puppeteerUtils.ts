@@ -1,48 +1,65 @@
 import puppeteer, {
-    ScreenshotOptions,
-} from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-import { generateLatex } from "./latexUtils.ts";
+	ScreenshotOptions,
+} from "https://deno.land/x/puppeteer_plus@0.24.0/mod.ts";
+import { generateStyledHTML } from "./textUtils.ts";
 
-export async function generateLatexImage(
-    string: string,
-    outputPath: string | undefined = undefined,
+export async function generateScreenshot(
+	string: string,
+	outputPath: string | undefined = undefined,
 ) {
-    let doc = await generateLatex(string);
-    let bodyIndex = doc.indexOf("<body>") + 6;
-    doc = doc.slice(0, bodyIndex) +
-        '<div id="latex-container" style="width: 700px">' +
-        doc.slice(bodyIndex);
-    bodyIndex = doc.indexOf("</body>");
-    doc = doc.slice(0, bodyIndex) + "</div>" + doc.slice(bodyIndex);
+	const browser = await puppeteer.launch({
+		args: ["--no-sandbox"],
+		timeout: 10000,
+	});
+	const page = await browser.newPage();
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(doc);
-    await page.waitForSelector("#latex-container");
-    const element = await page.$("#latex-container");
-    const body = await page.$(".body");
-    //await setTimeout(2000);
-    const boundingBox = await body!.boundingBox();
-    const aspectRatio = {
-        width: Math.ceil(boundingBox!.width),
-        height: Math.ceil(boundingBox!.height),
-        x: 0,
-        y: 0,
-    };
-    await page.setViewport(aspectRatio);
-    const screenshotOptions: ScreenshotOptions = {
-        clip: aspectRatio,
-        type: "png",
-        encoding: "binary",
-        path: outputPath ?? "",
-    };
-    if (outputPath) {
-        screenshotOptions.path = outputPath;
-    }
-    const uint8arr = await element!.screenshot(screenshotOptions);
-    await browser.close();
-    return { uint8arr, aspectRatio };
+	const styledHTML = generateStyledHTML(string);
+
+	await page.setContent(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>HTML Screenshot</title>
+            <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet" />
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            </style>
+        </head>
+        <body>
+            ${styledHTML}
+        </body>
+        </html>
+    `);
+
+	await page.waitForSelector(".styled-container");
+
+	// Select the element
+	const element = await page.$(".styled-container");
+	if (!element) {
+		throw new Error("Element not found!");
+	}
+
+	// Get the element's bounding box to retrieve width and height
+	const boundingBox = await element.boundingBox();
+	if (!boundingBox) {
+		throw new Error("Could not determine bounding box for the element!");
+	}
+
+	// Capture the screenshot of the element and return the buffer
+	const screenshotOptions: ScreenshotOptions = {
+		type: "png",
+		encoding: "binary",
+	};
+	if (outputPath) screenshotOptions.path = outputPath;
+
+	const buffer = await element.screenshot(screenshotOptions);
+
+	await browser.close();
+
+	return { buffer, boundingBox };
 }
-
-const quote = "“First lesson,” Jon said. “Stick them with the pointy end.” \n Arya gave him a *whap* on the arm with the flat of her blade. The blow stung, but Jon found himself grinning like an idiot. “I know which end to use,” Arya said.";
-await generateLatexImage(quote, "image.png");
