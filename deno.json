@@ -1,14 +1,15 @@
 {
-  "tasks": {
-    "build": "deno run --allow-all build.ts"
-  },
-  "compilerOptions": {
-    "lib": ["deno.ns"],
-    "types": ["./src/global.d.ts"]
-  },
-  "lint": {
-    "exclude": [
-      "public/bundle.js"
-    ]
-  }
+	"tasks": {
+		"build": "deno run --allow-all build.ts",
+		"run": "deno run --unstable-cron --allow-all main.ts"
+	},
+	"compilerOptions": {
+		"lib": ["deno.ns"],
+		"types": ["./src/global.d.ts"]
+	},
+	"lint": {
+		"exclude": [
+			"public/bundle.js"
+		]
+	}
 }

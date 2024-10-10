@@ -72,7 +72,10 @@ Deno.serve(handler);
 // @ts-ignore Deno.cron is unstable, run with --unstable-cron flag
 Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	const index = await getLastIndex();
-	const { image, aspectRatio } = await generateScreenshot(data[index].quote, "test.png");
+	const { image, aspectRatio } = await generateScreenshot(
+		data[index].quote,
+		"test.png",
+	);
 	await createBskyPost(data[0], image, aspectRatio);
 	await updateLastIndex(index + 1);
 
