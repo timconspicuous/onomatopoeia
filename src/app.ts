@@ -7,7 +7,7 @@ interface Quote {
 	link: string;
 }
 
-import { generateStyledHTML } from "./textUtils.ts";
+import { generateStyledHTML } from "../utils/textUtils.ts";
 
 const endpoint = globalThis.env.SHEET_ENDPOINT;
 
