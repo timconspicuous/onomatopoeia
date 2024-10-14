@@ -2,6 +2,7 @@
   "version": "4",
   "specifiers": {
     "jsr:@std/dotenv@*": "0.225.2",
+    "npm:@atcute/bluesky-richtext-builder@*": "1.0.1_@atcute+bluesky@1.0.7__@atcute+client@2.0.3_@atcute+client@2.0.3",
     "npm:@atcute/client@^2.0.3": "2.0.3",
     "npm:puppeteer-core@22.7.1": "22.7.1_devtools-protocol@0.0.1273771",
     "npm:puppeteer@22.7.1": "22.7.1"
@@ -12,6 +13,19 @@
     }
   },
   "npm": {
+    "@atcute/bluesky-richtext-builder@1.0.1_@atcute+bluesky@1.0.7__@atcute+client@2.0.3_@atcute+client@2.0.3": {
+      "integrity": "sha512-msyKHZa47id7Oe2zHpgPSuL+l9vLQXmKfi6uyMOS5yw6nLpNd5Tdb96wcgwscMmyH8UR4EoM+2oYLvyH89DcEQ==",
+      "dependencies": [
+        "@atcute/bluesky",
+        "@atcute/client"
+      ]
+    },
+    "@atcute/bluesky@1.0.7_@atcute+client@2.0.3": {
+      "integrity": "sha512-2jPHzl7WbcqRtcAXanJy4Lp638ujqnoGmPCPmBlmpEDP34D7EVKQqjN/mlvglb5n539dThA9xlSgIS8yOxwzDA==",
+      "dependencies": [
+        "@atcute/client"
+      ]
+    },
     "@atcute/client@2.0.3": {
       "integrity": "sha512-j9GryA5l+4F0BTQWa6/1XmsuSPSq+bqNCY3mrHUGD592hMqUZxgpYDLgRWL+719V287AW/56AwvFYlbjlENp7A=="
     },

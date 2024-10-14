@@ -1,4 +1,5 @@
 import { CredentialManager, XRPC } from "npm:@atcute/client@^2.0.3";
+import RichtextBuilder from "npm:@atcute/bluesky-richtext-builder";
 import { load } from "jsr:@std/dotenv";
 
 await load({ export: true });
@@ -16,11 +17,17 @@ export async function createBskyPost(
         password: Deno.env.get("BLUESKY_PASSWORD")!,
     });
 
+    const { text, facets } = new RichtextBuilder()
+        .addText(`${quote.book}, `)
+        .addLink(`${quote.chapter}`, quote.link)
+        .addText(`    `)
+        .addTag(`asoiaf`);
+
     const record = { // Type?
         createdAt: new Date().toISOString(),
         langs: ["en-US"],
-        text: `${quote.book}, ${quote.chapter}    #asoiaf`,
-        facets: getFacets(quote),
+        text: text,
+        facets: facets,
         embed: {
             $type: "app.bsky.embed.images",
             images: [
@@ -62,36 +69,4 @@ export async function createBskyPost(
         console.error("Error submitting post: ", error);
         throw error;
     }
-}
-
-function getFacets(quote: Quote) {
-    let text = `${quote.book}, ${quote.chapter}`;
-
-    const hashtag = "    #asoiaf";
-    text += hashtag;
-
-    const facets = [
-        {
-            index: {
-                byteStart: text.length - quote.chapter.length - hashtag.length,
-                byteEnd: text.length - hashtag.length,
-            },
-            features: [{
-                $type: "app.bsky.richtext.facet#link",
-                uri: quote.link,
-            }],
-        },
-        {
-            index: {
-                byteStart: text.length - hashtag.length + 4, // Skipping the extra spaces before the tag
-                byteEnd: text.length,
-            },
-            features: [{
-                $type: "app.bsky.richtext.facet#tag",
-                tag: "asoiaf",
-            }],
-        },
-    ];
-
-    return facets;
 }
