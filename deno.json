@@ -1,7 +1,7 @@
 {
 	"tasks": {
 		"build": "deno run --allow-all build.ts",
-		"run": "deno run --unstable-cron --allow-all main.ts"
+		"run": "deno run --unstable-cron --unstable-kv --allow-all main.ts"
 	},
 	"compilerOptions": {
 		"lib": ["deno.ns"],

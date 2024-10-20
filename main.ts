@@ -1,7 +1,5 @@
 import { generateScreenshot } from "./utils/astralUtils.ts";
-// import { generateScreenshot } from "./utils/puppeteerUtils.ts";
 import { createBskyPost } from "./utils/blueskyUtils.ts";
-
 import { load } from "jsr:@std/dotenv";
 
 await load({ export: true });
@@ -13,23 +11,6 @@ if (!endpoint) {
 
 const response = await fetch(endpoint);
 const { data } = await response.json();
-
-async function getLastIndex(): Promise<number> {
-	try {
-		const content = await Deno.readTextFile("lastIndex.txt");
-		return parseInt(content.trim(), 10);
-	} catch (error) {
-		if (error instanceof Deno.errors.NotFound) {
-			await Deno.writeTextFile("lastIndex.txt", "0");
-			return 0;
-		}
-		throw error;
-	}
-}
-
-async function updateLastIndex(index: number): Promise<void> {
-	await Deno.writeTextFile("lastIndex.txt", index.toString());
-}
 
 const handler = async (req: Request): Promise<Response> => {
 	const url = new URL(req.url);
@@ -72,12 +53,24 @@ Deno.serve(handler);
 
 // @ts-ignore Deno.cron is unstable, run with --unstable-cron flag
 Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
-	const index = await getLastIndex();
+	// Open KV and get last index
+	// @ts-ignore Deno.openKv is unstable, run with --unstable-kv flag
+	const kv = await Deno.openKv(
+		`https://api.deno.com/databases/${
+			Deno.env.get("DENO_KV_DATABASE_ID")
+		}/connect`,
+	);
+	const result = await kv.get<number>(["lastIndex"]);
+	let index = result.value ?? 0;
+
+	// Generate screenshot and upload it to Bluesky
 	const { image, aspectRatio } = await generateScreenshot(
 		data[index].quote, // "image.png"
 	);
 	await createBskyPost(data[0], image, aspectRatio);
-	await updateLastIndex(index + 1);
-
 	console.log(`Cron: posted quote of index ${index} to Bluesky.`);
+
+	// Update last index in KV
+	index = (index + 1) % data.length;
+	await kv.set(["lastIndex"], index);
 });
