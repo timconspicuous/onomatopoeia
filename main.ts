@@ -56,9 +56,9 @@ Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	// Open KV and get last index
 	// @ts-ignore Deno.openKv is unstable, run with --unstable-kv flag
 	const kv = await Deno.openKv(
-		`https://api.deno.com/databases/${
-			Deno.env.get("DENO_KV_DATABASE_ID")
-		}/connect`,
+		// `https://api.deno.com/databases/${
+		// 	Deno.env.get("DENO_KV_DATABASE_ID")
+		// }/connect`,
 	);
 	const result = await kv.get<number>(["lastIndex"]);
 	let index = result.value ?? 0;
