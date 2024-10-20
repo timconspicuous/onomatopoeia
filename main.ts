@@ -1,4 +1,5 @@
-import { generateScreenshot } from "./utils/puppeteerUtils.ts";
+import { generateScreenshot } from "./utils/astralUtils.ts";
+// import { generateScreenshot } from "./utils/puppeteerUtils.ts";
 import { createBskyPost } from "./utils/blueskyUtils.ts";
 
 import { load } from "jsr:@std/dotenv";
@@ -73,7 +74,7 @@ Deno.serve(handler);
 Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	const index = await getLastIndex();
 	const { image, aspectRatio } = await generateScreenshot(
-		data[index].quote,
+		data[index].quote, // "image.png"
 	);
 	await createBskyPost(data[0], image, aspectRatio);
 	await updateLastIndex(index + 1);
