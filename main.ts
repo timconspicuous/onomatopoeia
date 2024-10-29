@@ -1,4 +1,4 @@
-import { generateScreenshot } from "./utils/astralUtils.ts";
+import { generatePng } from "./utils/canvasUtils.ts"; 
 import { createBskyPost } from "./utils/blueskyUtils.ts";
 import { load } from "jsr:@std/dotenv";
 
@@ -64,7 +64,7 @@ Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	let index = result.value ?? 0;
 
 	// Generate screenshot and upload it to Bluesky
-	const { image, aspectRatio } = await generateScreenshot(
+	const { image, aspectRatio } = generatePng(
 		data[index].quote, // "image.png"
 	);
 	await createBskyPost(data[0], image, aspectRatio);

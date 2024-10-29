@@ -1,5 +1,5 @@
 .vscode
 .env
 /public/*.js
-lastIndex.txt
 *.png
+*.svg

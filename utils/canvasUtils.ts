@@ -211,8 +211,9 @@ export function generatePng(quote: string, path: string | null = null) {
 	};
 
 	const pngCanvas: Canvas = generateCanvas(createLocalCanvas, quote);
+	const aspectRatio = { width: pngCanvas.width, height: pngCanvas.height };
 	if (path) {
 		pngCanvas.save(path);
 	}
-	return pngCanvas.encode("png");
+	return { image: pngCanvas.encode("png"), aspectRatio};
 }
