@@ -1,4 +1,4 @@
-import { generatePng } from "./utils/canvasUtils.ts"; 
+import { generateImage } from "./utils/imageUtils.ts"; 
 import { createBskyPost } from "./utils/blueskyUtils.ts";
 import { load } from "jsr:@std/dotenv";
 
@@ -64,8 +64,8 @@ Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	let index = result.value ?? 0;
 
 	// Generate screenshot and upload it to Bluesky
-	const { image, aspectRatio } = generatePng(
-		data[index].quote, // "image.png"
+	const { image, aspectRatio } = await generateImage(
+		data[index].quote,
 	);
 	await createBskyPost(data[0], image, aspectRatio);
 	console.log(`Cron: posted quote of index ${index} to Bluesky.`);
