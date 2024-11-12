@@ -67,7 +67,7 @@ Deno.cron("Onomatopoeia", { hour: { every: 6 } }, async () => {
 	const { image, aspectRatio } = await generateImage(
 		data[index].quote,
 	);
-	await createBskyPost(data[0], image, aspectRatio);
+	await createBskyPost(data[index], image, aspectRatio);
 	console.log(`Cron: posted quote of index ${index} to Bluesky.`);
 
 	// Update last index in KV
