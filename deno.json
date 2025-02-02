@@ -11,5 +11,9 @@
 		"exclude": [
 			"public/bundle.js"
 		]
+	},
+	"fmt": {
+		"useTabs": true,
+		"indentWidth": 4
 	}
 }

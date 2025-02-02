@@ -25,12 +25,12 @@ type Font = {
 
 const fonts: Record<string, Font> = {
 	normal: {
-		url: "https://github.com/google/fonts/raw/refs/heads/main/ofl/merriweather/Merriweather-Regular.ttf",
+		url: "https://github.com/google/fonts/raw/refs/heads/main/ofl/merriweather/Merriweather%5Bopsz,wdth,wght%5D.ttf",
 		family: "Merriweather",
 		weight: "400",
 	},
 	italic: {
-		url: "https://github.com/google/fonts/raw/refs/heads/main/ofl/merriweather/Merriweather-Italic.ttf",
+		url: "https://github.com/google/fonts/raw/refs/heads/main/ofl/merriweather/Merriweather-Italic%5Bopsz,wdth,wght%5D.ttf",
 		family: "Merriweather",
 		weight: "400",
 	},
@@ -43,6 +43,10 @@ await Promise.all(
 		font.data = fontData;
 	}),
 );
+
+// Parse font
+const fontData: ArrayBuffer = fonts.normal.data!;
+const font = fontkit.create(Buffer.from(fontData));
 
 function formatText(quote: string) {
 	const paragraphs = quote.split("\\n");
@@ -134,14 +138,9 @@ function formatText(quote: string) {
 
 function measureText(
 	text: string,
-	fontSize: number = defaultFontSize,
-	fontData: ArrayBuffer = fonts.normal.data!,
 ) {
-	// Parse font
-	const font = fontkit.create(Buffer.from(fontData));
-
 	// Get width (scale based on fontSize)
-	const scale = fontSize / font.unitsPerEm;
+	const scale = defaultFontSize / font.unitsPerEm;
 	const width = font.layout(
 		text.replace(/\*/g, "")
 			.replace(" ", "  "), // hack, because single space made it look smushed
